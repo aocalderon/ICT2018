@@ -1,0 +1,9 @@
+import org.rogach.scallop.{ScallopConf, ScallopOption}
+
+class Conf(arguments: Seq[String]) extends ScallopConf(arguments) {
+  val var:    ScallopOption[Double] 	= opt[Double] 	(default = Some(10.0))
+  val mu:         ScallopOption[Int]    	= opt[Int]    	(default = Some(4))
+  val home:       ScallopOption[String] 	= opt[String] 	(default = Some("RESEARCH_HOME"))
+
+  verify()
+}

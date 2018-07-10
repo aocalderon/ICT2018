@@ -1,0 +1,36 @@
+package edu.usc.ict
+
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions._
+import org.apache.spark.sql.types.StructType
+import org.apache.spark.sql.catalyst.ScalaReflection
+import org.slf4j.{Logger, LoggerFactory}
+
+object SatelliteETL {
+  case class Pixel(x: Double, y: Double, value: Integer)
+  private val logger: Logger = LoggerFactory.getLogger("myLogger")
+
+  def main(args: Array[String]) {
+    val spark = SparkSession.builder
+      .master("local[*]")
+      .appName("SatelliteETL")
+      .getOrCreate()
+
+    import spark.implicits._
+		
+    val pixelSchema = ScalaReflection.schemaFor[Pixel].dataType.asInstanceOf[StructType]
+    val images = List("B2", "B3", "B4", "B5")
+    val inpath = "H:/"
+    val outpath = "H:\\data\\"
+    val extension = ".csv"
+
+    for(image <- images){
+      var band = s"${inpath}${image}${extension}"
+      var data = spark.read.option("delimiter", " ").option("header", "false").schema(pixelSchema).csv(band).as[Pixel].filter(_.value > 0.0).cache()
+      data.show(truncate = false)
+      logger.info(s"Number of records: ${data.count()}")
+      data.write.mode("overwrite").parquet(s"${outpath}${image}")
+    }
+    spark.close()
+  }
+}

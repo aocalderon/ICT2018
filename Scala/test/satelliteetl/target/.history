@@ -1,0 +1,24 @@
+ensimeConfig
+compile
+package
+clean
+package
+run
+package
+run
+package
+run
+package
+run
+package
+  private val logger: Logger = LoggerFactory.getLogger("myLogger")
+  def main(args: Array[String]) {
+    val spark = SparkSession.builder
+      .master("local[*]")
+      .appName("SatelliteETL")
+      .getOrCreate()
+    import spark.implicits._
+.schemaFor[Pixel].dataType.asInstanceOf[StructType]
+package
+clean
+package

@@ -1,0 +1,10 @@
+[0m[[0m[31merror[0m] [0m[0mH:\Projects\git\ICT2018\Scala\test\satelliteetl\src\main\scala\edu\usc\ict\DatasetWriter.scala:37:47: value x is not a member of org.apache.spark.sql.Row[0m
+[0m[[0m[31merror[0m] [0m[0m        dataset = band.map(p => PixelValues(p.x, p.y, s"${p.value}")).cache()[0m
+[0m[[0m[31merror[0m] [0m[0m                                              ^[0m
+[0m[[0m[31merror[0m] [0m[0mH:\Projects\git\ICT2018\Scala\test\satelliteetl\src\main\scala\edu\usc\ict\DatasetWriter.scala:37:52: value y is not a member of org.apache.spark.sql.Row[0m
+[0m[[0m[31merror[0m] [0m[0m        dataset = band.map(p => PixelValues(p.x, p.y, s"${p.value}")).cache()[0m
+[0m[[0m[31merror[0m] [0m[0m                                                   ^[0m
+[0m[[0m[31merror[0m] [0m[0mH:\Projects\git\ICT2018\Scala\test\satelliteetl\src\main\scala\edu\usc\ict\DatasetWriter.scala:37:61: value value is not a member of org.apache.spark.sql.Row[0m
+[0m[[0m[31merror[0m] [0m[0m        dataset = band.map(p => PixelValues(p.x, p.y, s"${p.value}")).cache()[0m
+[0m[[0m[31merror[0m] [0m[0m                                                            ^[0m
+[0m[[0m[31merror[0m] [0m[0mthree errors found[0m
