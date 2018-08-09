@@ -1,17 +1,26 @@
 import sys
-from os import listdir
+from os import walk
 from os.path import join, exists
+from glob import glob
 import argparse
 from PIL import Image
 import numpy as np
+import platform
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--save", help="Path to save the checkpoints to", default="/opt/EuroSAT/Test/output")
 parser.add_argument("--data", help="Training data directory", default="/opt/EuroSAT/Test/H")
 args = parser.parse_args()
 
-input_dir = join(args.data, "input")
-label_dir = join(args.data, "label")
+if 'Windows' in platform.platform():
+    save = "H:\data\EuroSAT\Test\output"
+    data = "H:\data\EuroSAT\Test\H"
+else:
+    data = "/opt/EuroSAT/Test/H"
+    save = "/opt/EuroSAT/Test/output"
+    
+input_dir = join(data, "input")
+label_dir = join(data, "label")
 
 if not (exists(input_dir) and exists(label_dir)):
     print("Input/label directories not found")
@@ -30,15 +39,14 @@ x = Conv2D(filters=1, kernel_size=(5, 5), kernel_initializer='he_normal')(x)
 m = Model(inputs=inputs, outputs=x)
 m.compile(Adam(lr=0.001), 'mse')
 
-X = np.array([np.asarray(Image.open(join(input_dir, f)).convert('L'))[None,...] for f in listdir(input_dir)])
+pngs = [f for x in walk(input_dir) for f in glob(join(x[0], '*.png'))]
+X = np.array([np.asarray(Image.open(join(input_dir, f)).convert('L'))[None,...] for f in pngs])
 X = np.transpose(X,[0,2,3,1])
-y = np.array([np.asarray(Image.open(join(label_dir, f)).convert('L'))[None,...] for f in listdir(label_dir)])
+pngs = [f for x in walk(label_dir) for f in glob(join(x[0], '*.png'))]
+y = np.array([np.asarray(Image.open(join(label_dir, f)).convert('L'))[None,...] for f in pngs])
 y = np.transpose(y,[0,2,3,1])
 
-count = 1
-while True:
-    m.fit(X, y, batch_size=128, nb_epoch = 5)
-    if args.save:
-        print("Saving model " + str(count * 5))
-        m.save(join(args.save, 'model_' + str(count * 5) + '.h5'))
-    count = count + 1
+m.fit(X, y, batch_size=128, nb_epoch = 10)
+if save:
+    print("Saving model...")
+    m.save(join(save, 'model_SR.h5'))

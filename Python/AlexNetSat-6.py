@@ -96,8 +96,10 @@ model.add(Dropout(0.5))
 model.add(BatchNormalization())
 
 # 2nd Dense Layer
+from keras.layers import ThresholdedReLU
+#model.add(Dense(200, activation=))
 model.add(Dense(200))
-model.add(Activation('relu'))
+model.add(ThresholdedReLU(theta=0.0000001))
 # Add Dropout
 model.add(Dropout(0.5))
 # Batch Normalisation
@@ -105,7 +107,7 @@ model.add(BatchNormalization())
 
 # 3rd Dense Layer
 model.add(Dense(200))
-model.add(Activation('relu'))
+model.add(ThresholdedReLU(theta=0.0000001))
 # Add Dropout
 model.add(Dropout(0.5))
 # Batch Normalisation
