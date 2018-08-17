@@ -8,7 +8,7 @@ Created on Fri Aug 10 17:31:58 2018
 from keras import backend as K
 import keras_contrib.backend as KC
 
-def PSNRLoss(y_true, y_pred):
+def PSNR(y_true, y_pred):
     return -10. * K.log(K.mean(K.square(y_pred - y_true))) / K.log(10.)
 
 def int_shape(x):

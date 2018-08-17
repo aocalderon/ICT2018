@@ -6,21 +6,20 @@ Created on Wed Aug 15 15:03:59 2018
 """
 import os, glob
 import numpy as np
-import matplotlib.pyplot as plt
 from PIL import Image
 import platform
 import h5py
 
-SCALE_FACTOR = 2
+SCALE_FACTOR = 4
 PATCH_SIZE   = 32
 ratio = int(PATCH_SIZE / SCALE_FACTOR)
 
 data_input  = "/opt/Datasets/BSDS200/"
 data_output = "/opt/Datasets/FSRCNN/"
 if platform.system() in ["Windows"]:
-    data_input  = r"H:\data\SR\FSRCNN\91-image\\"
-    data_output = r"H:\data\SR\FSRCNN\data\\"
-train_path = data_output + "train"
+    data_input  = r"H:\data\BSDS200\\"
+    data_output = r"H:\data\SR\FSRCNN\\"
+train_path = os.path.join(data_output, "BSDS200")
 if not os.path.exists(train_path):
     os.makedirs(train_path)
 data_file = os.path.join(train_path,'train.h5')
@@ -122,11 +121,9 @@ for filename in filenames:
             batch_y[i] = np.expand_dims(rotat, axis=2)
             i = i + 1
             count = count + 1
-
     train_X.resize(offset + n, axis=0)  
     train_X[offset:offset + n,...] = batch_X / 255.
     train_y.resize(offset + n, axis=0)
     train_y[offset:offset + n,...] = batch_y / 255.
-    offset = train_X.shape[0]
-    
+    offset = train_X.shape[0]    
 train_file.close()         

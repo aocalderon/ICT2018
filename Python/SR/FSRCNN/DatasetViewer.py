@@ -13,9 +13,9 @@ import random
 
 data_output = "/opt/Datasets/FSRCNN/"
 if platform.system() in ["Windows"]:
-    data_output = r"H:\data\SR\FSRCNN\data\\"
-train_path = data_output + "train"
-dataset = h5py.File(os.path.join(train_path,'train.h5'), 'a')
+    data_output = r"H:\data\SR\FSRCNN\\"
+train_path = os.path.join(data_output, "BSDS200")
+dataset = h5py.File(os.path.join(train_path,'train.h5'), 'r')
 X = dataset.get('X')
 y = dataset.get('y')
 print(X.shape)

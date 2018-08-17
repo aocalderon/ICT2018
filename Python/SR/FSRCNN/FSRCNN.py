@@ -1,41 +1,32 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-from keras import backend as K
 from keras.models import Model
 from keras.layers import Conv2D, Input, Conv2DTranspose
 from keras.layers.advanced_activations import PReLU
-import tensorflow as tf
 from keras import optimizers
 from keras.callbacks import ModelCheckpoint
-
+from losses import PSNR, SSIM
 import platform
 import h5py
 import os
 
-SCALE_FACTOR = 2
-PIXEL_SIDE   = 16
+PATCH_SIZE   = 32
+SCALE_FACTOR = 4
+PIXEL_SIDE   = PATCH_SIZE / SCALE_FACTOR
 IMAGE_SHAPE  = (PIXEL_SIDE, PIXEL_SIDE, 1)
 BATCH_SIZE   = 128
 EPOCHS       = 32
 
-data_output = "/opt/Datasets/FSRCNN/"
+base_dir    = "/opt/ICT2018/Python/SR/FSRCNN"
 if platform.system() in ["Windows"]:
-    data_output = r"H:\data\SR\FSRCNN\data\\"
-train_path = data_output + "train"
-dataset = h5py.File(os.path.join(train_path,'train.h5'), 'a')
+    base_dir   = "H:\Projects\git\ICT2018\Python\SR\FSRCNN\\"
+    data_input = "H:\data\SR\FSRCNN\\" 
+data_output = os.path.join(base_dir, "Results")
+train_path  = os.path.join(data_input, "BSDS200")
+dataset = h5py.File(os.path.join(train_path,'train.h5'), 'r')
 X = dataset.get('X')
 y = dataset.get('y')
 
-def tf_log10(x):
-  numerator = tf.log(x)
-  denominator = tf.log(tf.constant(10, dtype=numerator.dtype))
-  return numerator / denominator
-
-def PSNR(y_true, y_pred):
-	max_pixel = 1.0
-	return 10.0 * tf_log10((max_pixel ** 2) / (K.mean(K.square(y_pred - y_true)))) 
-    
 input_img = Input(shape=IMAGE_SHAPE)
 
 model = Conv2D(56, (5, 5), padding='same', kernel_initializer='he_normal')(input_img)
@@ -62,12 +53,11 @@ output_img = model
 
 model = Model(input_img, output_img)
 
-# model.load_weights('./checkpoints/weights-improvement-20-26.93.hdf5')
+# model.load_weights('/checkpoints/weights-improvement-20-26.93.hdf5')
+# model.load_weights(os.path.join(data_output,'fsrcnn_model.h5'))
 
 adam = optimizers.Adam(lr=1e-3)
 model.compile(optimizer=adam, loss='mse', metrics=[PSNR])
-
-#model.compile(optimizer='adam', lr=0.0001, loss='mse', metrics=[PSNR, "accuracy"])
 
 model.summary()
 
@@ -76,11 +66,11 @@ filepath = os.path.join(data_output, "checkpoints",
 checkpoint = ModelCheckpoint(filepath, monitor=PSNR, verbose=1, mode='max')
 callbacks_list = [checkpoint]
 
-model.fit(X, y, epochs=EPOCHS, 
-          validation_split=0.2,
+model.fit(X, y, epochs=EPOCHS,
+          validation_split=0.25,
           batch_size=BATCH_SIZE, callbacks=callbacks_list, shuffle="batch")
 
 print("Done training!!!")
 print("Saving the final model ...")
 
-model.save(os.path.join(data_output,'fsrcnn_model.h5'))  # creates a HDF5 file 
+model.save(os.path.join(data_output,"fsrcnn_model_{}x.h5".format(SCALE_FACTOR)))  # creates a HDF5 file
