@@ -10,6 +10,8 @@ from PIL import Image
 import platform
 import h5py
 
+EXTENSION = "bmp"
+NORMALIZATION = True
 SCALE_FACTOR = 4
 PATCH_SIZE   = 32
 ratio = int(PATCH_SIZE / SCALE_FACTOR)
@@ -17,15 +19,15 @@ ratio = int(PATCH_SIZE / SCALE_FACTOR)
 data_input  = "/opt/Datasets/BSDS200/"
 data_output = "/opt/Datasets/FSRCNN/"
 if platform.system() in ["Windows"]:
-    data_input  = r"H:\data\BSDS200\\"
+    data_input  = r"H:\data\SR\FSRCNN\EuroSAT_IR\\"
     data_output = r"H:\data\SR\FSRCNN\\"
-train_path = os.path.join(data_output, "BSDS200")
+train_path = os.path.join(data_output, "EIR")
 if not os.path.exists(train_path):
     os.makedirs(train_path)
 data_file = os.path.join(train_path,'train.h5')
 if os.path.exists(data_file):
     os.remove(data_file)
-train_file = h5py.File(data_file, 'a')
+train_file = h5py.File(data_file, 'w')
 train_X = train_file.create_dataset('X', (1,ratio,ratio,1), 
                                        maxshape=(None,ratio,ratio,1),
                                        dtype='float32', 
@@ -36,7 +38,7 @@ train_y = train_file.create_dataset('y', (1,PATCH_SIZE,PATCH_SIZE,1),
                                        chunks=(10**2,PATCH_SIZE,PATCH_SIZE,1))    
 offset = 0   
     
-filenames = glob.glob(os.path.join(data_input,"*.png"))
+filenames = glob.glob(os.path.join(data_input,"*.{}".format(EXTENSION)))
 print(len(filenames))
 count = 1
 #filenames = filenames[0:2]
@@ -122,8 +124,12 @@ for filename in filenames:
             i = i + 1
             count = count + 1
     train_X.resize(offset + n, axis=0)  
-    train_X[offset:offset + n,...] = batch_X / 255.
     train_y.resize(offset + n, axis=0)
-    train_y[offset:offset + n,...] = batch_y / 255.
+    if NORMALIZATION:
+        train_X[offset:offset + n,...] = batch_X / 255.
+        train_y[offset:offset + n,...] = batch_y / 255.
+    else:
+        train_X[offset:offset + n,...] = batch_X
+        train_y[offset:offset + n,...] = batch_y
     offset = train_X.shape[0]    
 train_file.close()         

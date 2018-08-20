@@ -5,7 +5,7 @@ from keras.layers import Conv2D, Input, Conv2DTranspose
 from keras.layers.advanced_activations import PReLU
 from keras import optimizers
 from keras.callbacks import ModelCheckpoint
-from losses import PSNR, SSIM
+from losses import PSNR
 import platform
 import h5py
 import os
@@ -22,7 +22,7 @@ if platform.system() in ["Windows"]:
     base_dir   = "H:\Projects\git\ICT2018\Python\SR\FSRCNN\\"
     data_input = "H:\data\SR\FSRCNN\\" 
 data_output = os.path.join(base_dir, "Results")
-train_path  = os.path.join(data_input, "BSDS200")
+train_path  = os.path.join(data_input, "EIR")
 dataset = h5py.File(os.path.join(train_path,'train.h5'), 'r')
 X = dataset.get('X')
 y = dataset.get('y')
