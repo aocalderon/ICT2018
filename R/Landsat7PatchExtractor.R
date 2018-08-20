@@ -16,16 +16,22 @@ R_AD = as.numeric(str_split_fixed(metadata[grep("REFLECTANCE_ADD_BAND", str_trim
 
 Bands = c("B", "G", "R", "I", "S1", "T", "S2", "P")
 L7 = vector("list")
-for(i in c(1,2,3,4,8)){
+i = 8
+L = satellite(paste0("H:/L7/LE07_L1TP_040036_20180629_20180629_01_RT_B",i,".TIF"))
+L7[[Bands[i]]] = convRad2Ref(L)@layers[2][[1]]
+for(i in seq(1,4)){
   L = satellite(paste0("H:/L7/LE07_L1TP_040036_20180629_20180629_01_RT_B",i,".TIF"))
-  L7[[Bands[i]]] = convRad2Ref(L)@layers[2][[1]]
-  
-  #x = L
-  #patch <- as(extent(midx - size, midx + size, midy - size, midy + size), 'SpatialPolygons')
+  L7[[Bands[i]]] = resample(convRad2Ref(L)@layers[2][[1]], L7$P)
 }
 
-
-
+xmin = L7_prime$I@extent@xmin
+ymin = L7_prime$I@extent@ymin
+Hres = 15
+Lres = 30
+res = 30
+col = 1
+row = 1
+patch <- as(extent(xmin, xmin + col * res, ymin, ymin + row * res), 'SpatialPolygons')
 
 L = raster("H:/L7/LE07_L1TP_040036_20180629_20180629_01_RT_B8.TIF")
 crs(clip) <- crs(L)
