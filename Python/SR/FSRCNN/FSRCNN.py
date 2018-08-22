@@ -11,9 +11,10 @@ import h5py
 import os
 
 PATCH_SIZE   = 32
-SCALE_FACTOR = 4
+SCALE_FACTOR = 2
+CHANNELS     = 4
 PIXEL_SIDE   = PATCH_SIZE / SCALE_FACTOR
-IMAGE_SHAPE  = (PIXEL_SIDE, PIXEL_SIDE, 1)
+IMAGE_SHAPE  = (PIXEL_SIDE, PIXEL_SIDE, CHANNELS)
 BATCH_SIZE   = 128
 EPOCHS       = 32
 
@@ -22,7 +23,7 @@ if platform.system() in ["Windows"]:
     base_dir   = "H:\Projects\git\ICT2018\Python\SR\FSRCNN\\"
     data_input = "H:\data\SR\FSRCNN\\" 
 data_output = os.path.join(base_dir, "Results")
-train_path  = os.path.join(data_input, "EIR")
+train_path  = os.path.join(data_input, "L7")
 dataset = h5py.File(os.path.join(train_path,'train.h5'), 'r')
 X = dataset.get('X')
 y = dataset.get('y')
