@@ -21,13 +21,14 @@ R_MB = as.numeric(str_split_fixed(metadata[grep("REFLECTANCE_MULT_BAND", str_tri
 R_AD = as.numeric(str_split_fixed(metadata[grep("REFLECTANCE_ADD_BAND", str_trim(metadata))], " = ", 2)[,2])
 
 Bands = c("B", "G", "R", "I", "S1", "T", "S2", "P")
-L7 = vector("list")
+L7 = vector("list", 5)
 for(i in c(1,2,3,4,8)){
   L7[[Bands[i]]] = raster(paste0(landsat_dir,"L7_",i,".tif")) 
 }
 
 # resample(convRad2Ref(L)@layers[2][[1]], L7$P)
 
+patches = vector("list", 200)
 band = "P"
 L = readAll(L7[band][[1]])
 xmin = L@extent@xmin
@@ -38,8 +39,7 @@ res = L_RES
 if(band == "P")
   res = H_RES
 size = PATCH_SIZE * res
-ncols = (L@ncols - (L@ncols %% PATCH_SIZE)) / PATCH_SIZE
-nrows = (L@nrows - (L@nrows %% PATCH_SIZE)) / PATCH_SIZE
+count = 1
 while(xmin < xmax - size){
   ymin = L@extent@ymin
   while(ymin < ymax - size){
@@ -49,10 +49,53 @@ while(xmin < xmax - size){
     v = getValues(L_crop)
     if(min(v) > 0){
       plot(L_crop)
+      patches[[count]] = patch
+      count = count + 1
     }
     ymin = ymin + size
   }
   xmin = xmin + size
+  if(count > 100){
+    break
+  }
+}
+
+B = readAll(L7["B"][[1]])
+G = readAll(L7["G"][[1]])
+R = readAll(L7["R"][[1]])
+I = readAll(L7["I"][[1]])
+for(i in 1:(count - 1)){
+  patch = patches[i][[1]]
+  valid = TRUE
+  B_crop = crop(I, patch)
+  v = getValues(B_crop)
+  if(min(v) == 0){
+    valid = FALSE
+  }
+  if(valid){
+    B_crop = crop(R, patch)
+    v = getValues(B_crop)
+    if(min(v) == 0){
+      valid = FALSE
+    }
+  }
+  if(valid){
+    B_crop = crop(G, patch)
+    v = getValues(B_crop)
+    if(min(v) == 0){
+      valid = FALSE
+    }
+  }
+  if(valid){
+    B_crop = crop(B, patch)
+    v = getValues(B_crop)
+    if(min(v) == 0){
+      valid = FALSE
+    }
+  }
+  if(valid){
+    print(paste("It is a valid patch: ", patch@xmin," ", patch@xmax," ", patch@ymin," ", patch@ymax))
+  }
 }
 
 if(PLOT_FLAG){
