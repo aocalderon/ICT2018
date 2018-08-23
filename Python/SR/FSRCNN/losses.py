@@ -54,7 +54,6 @@ def SSIM(y_true, y_pred):
     
 def SSIM2(y_true, y_pred):
         """Need tf0.11rc to work"""
-        batch_size = 32
         y_true = tf.reshape(y_true, y_true.shape[1:])
         y_pred = tf.reshape(y_pred, y_pred.shape[1:])
         y_true = tf.transpose(y_true, [0, 2, 3, 1])

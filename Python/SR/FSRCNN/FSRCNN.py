@@ -6,6 +6,10 @@ from keras.layers.advanced_activations import PReLU
 from keras import optimizers
 from keras.callbacks import ModelCheckpoint
 from losses import PSNR
+from skimage.measure import compare_mse   as mse
+from skimage.measure import compare_nrmse as rmse
+from skimage.measure import compare_psnr  as psnr
+from skimage.measure import compare_ssim  as ssim
 import platform
 import h5py
 import os
@@ -19,14 +23,22 @@ BATCH_SIZE   = 128
 EPOCHS       = 32
 
 base_dir    = "/opt/ICT2018/Python/SR/FSRCNN"
+data_input  = "/opt/Datasets/FSRCNN"
 if platform.system() in ["Windows"]:
     base_dir   = "H:\Projects\git\ICT2018\Python\SR\FSRCNN\\"
     data_input = "H:\data\SR\FSRCNN\\" 
 data_output = os.path.join(base_dir, "Results")
 train_path  = os.path.join(data_input, "L7")
-dataset = h5py.File(os.path.join(train_path,'train.h5'), 'r')
+dataset = h5py.File(os.path.join(train_path,'trainL7.h5'), 'r')
 X = dataset.get('X')
 y = dataset.get('y')
+
+n = X.shape[0]
+t = int(n * 0.8)
+x_true = X[t:n, ...]
+y_true = y[t:n, ...]
+X = X[0:t, ...]
+y = y[0:t, ...]
 
 input_img = Input(shape=IMAGE_SHAPE)
 
@@ -74,4 +86,24 @@ model.fit(X, y, epochs=EPOCHS,
 print("Done training!!!")
 print("Saving the final model ...")
 
-model.save(os.path.join(data_output,"fsrcnn_model_{}x.h5".format(SCALE_FACTOR)))  # creates a HDF5 file
+model.save(os.path.join(data_output,"fsrcnn_L7_Epoch{}_{}x.h5".format(EPOCHS, SCALE_FACTOR)))  # creates a HDF5 file
+
+y_pred = model.predict(x_true)
+n = y_true.shape[0]
+mses  = 0
+rmses = 0
+psnrs = 0
+ssims = 0
+for i in range(0,n):
+    print("Testing {}/{}...".format(i,n))
+    y = y_true[i,:,:,0]
+    y_prime = y_pred[i,:,:,0]
+    mses  = mses  +  mse(y, y_prime)
+    rmses = rmses + rmse(y, y_prime)
+    psnrs = psnrs + psnr(y, y_prime, data_range=y_prime.max() - y_prime.min())
+    ssims = ssims + ssim(y, y_prime, data_range=y_prime.max() - y_prime.min())
+mses  =  mses / n
+rmses = rmses / n
+psnrs = psnrs / n
+ssims = ssims / n
+print("MSE={} RMSE={} SSIM={} PSNR={}".format(mses, rmses, ssims, psnrs))
