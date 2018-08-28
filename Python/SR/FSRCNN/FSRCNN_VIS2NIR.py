@@ -18,7 +18,7 @@ PATCH_SIZE   = 16
 CHANNELS     = 3
 IMAGE_SHAPE  = (PATCH_SIZE, PATCH_SIZE, CHANNELS)
 BATCH_SIZE   = 128
-EPOCHS       = 2
+EPOCHS       = 64
 
 base_dir    = "/opt/ICT2018/Python/SR/FSRCNN"
 data_input  = "/opt/Datasets/FSRCNN"
