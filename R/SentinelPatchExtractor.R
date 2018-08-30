@@ -5,7 +5,7 @@ library(tidyverse)
 
 PATCH_SIZE = 16
 H_RES = 10
-NUMBER_OF_PATCHES = 8000
+NUMBER_OF_PATCHES = 80000
 sysinf <- Sys.info()
 
 sentinel_dir = "H:/S2/VIS2NIR/"

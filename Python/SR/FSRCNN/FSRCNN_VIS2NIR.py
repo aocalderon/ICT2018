@@ -24,15 +24,15 @@ base_dir    = "/opt/ICT2018/Python/SR/FSRCNN"
 data_input  = "/opt/Datasets/FSRCNN"
 if platform.system() in ["Windows"]:
     base_dir   = r"H:\Projects\git\ICT2018\Python\SR\FSRCNN\\"
-    data_input = r"H:\data\SR\FSRCNN\L7\\" 
+    data_input = r"H:\S2\VIS2NIR\\" 
 data_output = os.path.join(base_dir, "Results")
-train_path  = os.path.join(data_input, "VIS2NIR")
-dataset = h5py.File(os.path.join(train_path,'VIS2NIR_train.h5'), 'r')
+train_path  = os.path.join(data_input, "Train")
+dataset = h5py.File(os.path.join(train_path,'train_VIS2NIR.h5'), 'r')
 X = dataset.get('X')
 y = dataset.get('y')
 
 n = X.shape[0]
-t = int(n * 0.8)
+t = int(n * 0.9)
 x_true = X[t:n, ...]
 y_true = y[t:n, ...]
 X = X[0:t, ...]
@@ -78,7 +78,7 @@ checkpoint = ModelCheckpoint(filepath, monitor=PSNR, verbose=1, mode='max')
 callbacks_list = [checkpoint]
 
 model.fit(X, y, epochs=EPOCHS,
-          validation_split=0.25,
+          validation_split=0.20,
           batch_size=BATCH_SIZE, callbacks=callbacks_list, shuffle="batch")
 
 print("Done training!!!")

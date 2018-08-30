@@ -20,7 +20,7 @@ RATIO        = PATCH_SIZE / SCALE_FACTOR
 
 data_input  = "/opt/GISData/Sentinel/"
 if platform.system() in ["Windows"]:
-    data_input  = r"H:\L7\Output\\"
+    data_input  = r"H:/S2/VIS2NIR/"
 train_path = os.path.join(data_input, "Patches")
 if not os.path.exists(train_path):
     os.makedirs(train_path)

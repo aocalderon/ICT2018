@@ -12,7 +12,7 @@ import platform
 import h5py
 #from PIL import Image
 
-NUMBER_OF_PATCHES = 45072
+NUMBER_OF_PATCHES = 15000
 #NUMBER_OF_PATCHES = 100
 AUGMENTORS = 6
 PATCH_SIZE = 16
@@ -40,12 +40,12 @@ def doRotation(image, times = 1):
 data_input  = "/opt/Datasets/BSDS200/"
 data_output = "/opt/Datasets/FSRCNN/"
 if platform.system() in ["Windows"]:
-    data_input  = r"H:\data\SR\FSRCNN\L7\Patches\\"
-    data_output = r"H:\data\SR\FSRCNN\L7\\"
-train_path = os.path.join(data_output, "VIS2NIR")
+    data_input  = r"H:\S2\VIS2NIR\Patches\\"
+    data_output = r"H:\S2\VIS2NIR\\"
+train_path = os.path.join(data_output, "Train")
 if not os.path.exists(train_path):
     os.makedirs(train_path)
-data_file = os.path.join(train_path,'VIS2NIR_train.h5')
+data_file = os.path.join(train_path,'train_VIS2NIR.h5')
 if os.path.exists(data_file):
     os.remove(data_file)
 train_file = h5py.File(data_file, 'w')
@@ -55,7 +55,7 @@ i = 0
 n = 1
 while i < NUMBER_OF_PATCHES*AUGMENTORS:
     print("Processing patches {} to {} from image {}...".format(i, i + AUGMENTORS - 1, n))
-    filename = os.path.join(data_input, "MS_{}.tif".format(n))
+    filename = os.path.join(data_input, "VIS_{}.tif".format(n))
     ms = rasterio.open(filename, 'r+')
     image = ms.read().astype('float32')
     for j in [0,1,2]:
@@ -71,7 +71,10 @@ while i < NUMBER_OF_PATCHES*AUGMENTORS:
     X[i+4] = doRotation(X[i],2)
     X[i+5] = doRotation(X[i],3)
 
-    b = image[3]
+    filename = os.path.join(data_input, "NIR_{}.tif".format(n))
+    ms = rasterio.open(filename, 'r+')
+    image = ms.read().astype('float32')
+    b = image[0]
     imin, imax = np.percentile(b, [1,99])
     b[b > imax] = imax
     b[b < imin] = imin
@@ -87,4 +90,3 @@ while i < NUMBER_OF_PATCHES*AUGMENTORS:
     n = n + 1
 
 train_file.close()
-
