@@ -68,7 +68,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="187" />
     <option name="width" value="1400" />
     <option name="height" value="1000" />
@@ -129,7 +129,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.LCMmax">
+  <component name="RunManager" selected="Application.LCMmax2">
     <configuration name="LCMmax" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="LCMmax" />
       <module name="lcm" />
@@ -187,8 +187,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.LCMmax" />
         <item itemvalue="Application.LCMmax2" />
+        <item itemvalue="Application.LCMmax" />
       </list>
     </recent_temporary>
   </component>

@@ -14,22 +14,21 @@ import platform
 import h5py
 import os
 
-PATCH_SIZE   = 16
+PATCH_SIZE   = 28
 CHANNELS     = 3
 IMAGE_SHAPE  = (PATCH_SIZE, PATCH_SIZE, CHANNELS)
 BATCH_SIZE   = 128
-EPOCHS       = 64
+EPOCHS       = 2
 
 base_dir    = "/opt/ICT2018/Python/SR/FSRCNN"
 data_input  = "/opt/Datasets/FSRCNN"
 if platform.system() in ["Windows"]:
     base_dir   = r"H:\Projects\git\ICT2018\Python\SR\FSRCNN\\"
-    data_input = r"H:\S2\VIS2NIR\\" 
+    data_input = r"H:\data\Sat-6\\"
 data_output = os.path.join(base_dir, "Results")
-train_path  = os.path.join(data_input, "Train")
-dataset = h5py.File(os.path.join(train_path,'train_VIS2NIR.h5'), 'r')
+dataset = h5py.File(os.path.join(data_input,'sat-6-full.h5'), 'r')
 X = dataset.get('X')
-y = dataset.get('y')
+y = dataset.get('Y')
 
 n = X.shape[0]
 t = int(n * 0.9)
@@ -65,7 +64,8 @@ output_img = model
 model = Model(input_img, output_img)
 
 # model.load_weights('/checkpoints/weights-improvement-20-26.93.hdf5')
-# model.load_weights(os.path.join(data_output,'fsrcnn_model.h5'))
+# model_path = os.path.join(base_dir, "Results")
+# model.load_weights(os.path.join(model_path,'fsrcnn_L7_Epoch64_VIS2NIR.h5'))
 
 adam = optimizers.Adam(lr=1e-3)
 model.compile(optimizer=adam, loss='mse', metrics=[PSNR])
@@ -84,7 +84,7 @@ model.fit(X, y, epochs=EPOCHS,
 print("Done training!!!")
 print("Saving the final model ...")
 
-model.save(os.path.join(data_output,"fsrcnn_L7_Epoch{}_VIS2NIR.h5".format(EPOCHS)))  # creates a HDF5 file
+model.save(os.path.join(data_output,"fsrcnn_Sat-6_Epoch{}_VIS2NIR.h5".format(EPOCHS)))  # creates a HDF5 file
 
 y_pred = model.predict(x_true)
 n = y_true.shape[0]

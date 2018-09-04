@@ -12,7 +12,7 @@ import platform
 import h5py
 #from PIL import Image
 
-NUMBER_OF_PATCHES = 15000
+NUMBER_OF_PATCHES = 80000
 #NUMBER_OF_PATCHES = 100
 AUGMENTORS = 6
 PATCH_SIZE = 16
